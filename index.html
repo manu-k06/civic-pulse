@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CivicPulse</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,600;0,800;1,300&family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<body>
+
+  <!-- Environmental overlay -->
+  <div class="env-overlay" id="env-overlay">
+    <div class="smog-layer" id="smog-layer">
+      <div class="smog-particles" id="smog-particles"></div>
+    </div>
+
+  </div>
+
+  <!-- Citizen reactions container -->
+  <div class="citizen-reactions" id="citizen-reactions"></div>
+
+  <!-- Emergency alert -->
+  <div class="emergency-alert" id="emergency-alert">
+    <div class="alert-icon" id="alert-icon">⚠️</div>
+    <div class="alert-content">
+      <div class="alert-title" id="alert-title">WARNING</div>
+      <div class="alert-msg" id="alert-msg">Threshold crossed</div>
+    </div>
+    <button class="alert-close" onclick="dismissAlert()">✕</button>
+  </div>
+
+  <!-- ============ INTRO SCREEN ============ -->
+  <!-- Tutorial overlay -->
+  <div class="tutorial-overlay hidden" id="tutorial-overlay">
+    <div class="tutorial-card" id="tutorial-card">
+      <div class="tut-step-dots" id="tut-dots"></div>
+      <div class="tut-icon" id="tut-icon"></div>
+      <div class="tut-title" id="tut-title"></div>
+      <div class="tut-body" id="tut-body"></div>
+      <div class="tut-actions">
+        <button class="tut-skip" onclick="closeTutorial()">Skip</button>
+        <button class="tut-next" id="tut-next-btn" onclick="tutorialNext()">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Achievement popup -->
+  <div class="achievement-popup" id="achievement-popup">
+    <div class="ach-icon" id="ach-popup-icon">🏆</div>
+    <div>
+      <div class="ach-label">Achievement Unlocked!</div>
+      <div class="ach-name" id="ach-popup-name"></div>
+      <div class="ach-desc" id="ach-popup-desc"></div>
+    </div>
+  </div>
+
+  <!-- Red flash overlay -->
+  <div class="flash-overlay" id="flash-overlay"></div>
+
+  <!-- Global overlays -->
+  <div class="screen-wipe" id="screen-wipe"></div>
+  <div class="round-transition" id="round-transition">
+    <div class="round-transition-text" id="round-transition-text">CHALLENGE 1</div>
+  </div>
+  <button class="mute-btn" id="mute-btn" onclick="toggleMute()" title="Toggle sound">🔊</button>
+
+  <div id="screen-intro" class="screen active">
+
+    <!-- Background layers -->
+    <div class="intro-bg-mesh"></div>
+    <div class="intro-grid"></div>
+    <div class="scanlines"></div>
+
+    <!-- Floating orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-4"></div>
+
+    <!-- Stars layer -->
+    <div class="stars-layer" id="stars-layer"></div>
+
+    <!-- Particle canvas -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Animated city skyline -->
+    <div class="skyline-wrap">
+      <svg viewBox="0 0 1400 200" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="bldg-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#6D28D9" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#1E0A3C" stop-opacity="0.9"/>
+          </linearGradient>
+          <linearGradient id="bldg-grad2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#0F172A" stop-opacity="0.9"/>
+          </linearGradient>
+          <linearGradient id="bldg-grad3" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#EC4899" stop-opacity="0.4"/>
+            <stop offset="100%" stop-color="#1E0A3C" stop-opacity="0.9"/>
+          </linearGradient>
+        </defs>
+        <!-- Back row buildings -->
+        <rect class="skyline-building" x="0" y="100" width="60" height="100" fill="url(#bldg-grad2)" style="animation-delay:0.1s"/>
+        <rect class="skyline-building" x="70" y="60" width="45" height="140" fill="url(#bldg-grad)" style="animation-delay:0.15s"/>
+        <rect class="skyline-building" x="125" y="80" width="50" height="120" fill="url(#bldg-grad2)" style="animation-delay:0.2s"/>
+        <rect class="skyline-building" x="185" y="30" width="40" height="170" fill="url(#bldg-grad)" style="animation-delay:0.25s"/>
+        <rect class="skyline-building" x="235" y="70" width="55" height="130" fill="url(#bldg-grad2)" style="animation-delay:0.3s"/>
+        <rect class="skyline-building" x="300" y="50" width="35" height="150" fill="url(#bldg-grad3)" style="animation-delay:0.35s"/>
+        <rect class="skyline-building" x="345" y="90" width="50" height="110" fill="url(#bldg-grad)" style="animation-delay:0.4s"/>
+        <rect class="skyline-building" x="405" y="20" width="45" height="180" fill="url(#bldg-grad2)" style="animation-delay:0.45s"/>
+        <rect class="skyline-building" x="460" y="75" width="55" height="125" fill="url(#bldg-grad)" style="animation-delay:0.5s"/>
+        <rect class="skyline-building" x="525" y="55" width="40" height="145" fill="url(#bldg-grad3)" style="animation-delay:0.55s"/>
+        <rect class="skyline-building" x="575" y="35" width="50" height="165" fill="url(#bldg-grad)" style="animation-delay:0.6s"/>
+        <rect class="skyline-building" x="635" y="80" width="45" height="120" fill="url(#bldg-grad2)" style="animation-delay:0.65s"/>
+        <rect class="skyline-building" x="690" y="15" width="55" height="185" fill="url(#bldg-grad)" style="animation-delay:0.7s"/>
+        <rect class="skyline-building" x="755" y="60" width="40" height="140" fill="url(#bldg-grad3)" style="animation-delay:0.75s"/>
+        <rect class="skyline-building" x="805" y="45" width="50" height="155" fill="url(#bldg-grad2)" style="animation-delay:0.8s"/>
+        <rect class="skyline-building" x="865" y="70" width="45" height="130" fill="url(#bldg-grad)" style="animation-delay:0.85s"/>
+        <rect class="skyline-building" x="920" y="30" width="55" height="170" fill="url(#bldg-grad2)" style="animation-delay:0.9s"/>
+        <rect class="skyline-building" x="985" y="85" width="40" height="115" fill="url(#bldg-grad3)" style="animation-delay:0.95s"/>
+        <rect class="skyline-building" x="1035" y="55" width="50" height="145" fill="url(#bldg-grad)" style="animation-delay:1.0s"/>
+        <rect class="skyline-building" x="1095" y="25" width="45" height="175" fill="url(#bldg-grad2)" style="animation-delay:1.05s"/>
+        <rect class="skyline-building" x="1150" y="65" width="55" height="135" fill="url(#bldg-grad)" style="animation-delay:1.1s"/>
+        <rect class="skyline-building" x="1215" y="40" width="40" height="160" fill="url(#bldg-grad3)" style="animation-delay:1.15s"/>
+        <rect class="skyline-building" x="1265" y="80" width="50" height="120" fill="url(#bldg-grad2)" style="animation-delay:1.2s"/>
+        <rect class="skyline-building" x="1325" y="50" width="75" height="150" fill="url(#bldg-grad)" style="animation-delay:1.25s"/>
+        <!-- Antenna spikes -->
+        <rect class="skyline-building" x="207" y="10" width="3" height="25" fill="#A78BFA" opacity="0.8" style="animation-delay:1.3s"/>
+        <rect class="skyline-building" x="412" y="2" width="3" height="22" fill="#60A5FA" opacity="0.8" style="animation-delay:1.35s"/>
+        <rect class="skyline-building" x="693" y="-4" width="4" height="24" fill="#F472B6" opacity="0.8" style="animation-delay:1.4s"/>
+        <rect class="skyline-building" x="1098" y="6" width="3" height="20" fill="#A78BFA" opacity="0.8" style="animation-delay:1.45s"/>
+        <!-- Window lights -->
+        <rect class="win-light" x="78" y="80" width="5" height="4" fill="#FDE047" opacity="0.9" style="animation-duration:2.1s;animation-delay:0.3s"/>
+        <rect class="win-light" x="87" y="80" width="5" height="4" fill="#FDE047" opacity="0.9" style="animation-duration:3.2s;animation-delay:0.8s"/>
+        <rect class="win-light" x="78" y="90" width="5" height="4" fill="#93C5FD" opacity="0.9" style="animation-duration:2.7s;animation-delay:1.1s"/>
+        <rect class="win-light" x="195" y="50" width="6" height="5" fill="#FDE047" opacity="0.9" style="animation-duration:1.9s;animation-delay:0.5s"/>
+        <rect class="win-light" x="205" y="50" width="6" height="5" fill="#C4B5FD" opacity="0.9" style="animation-duration:3.5s;animation-delay:1.3s"/>
+        <rect class="win-light" x="195" y="62" width="6" height="5" fill="#FDE047" opacity="0.9" style="animation-duration:2.3s;animation-delay:0.2s"/>
+        <rect class="win-light" x="415" y="40" width="6" height="5" fill="#93C5FD" opacity="0.9" style="animation-duration:2.8s;animation-delay:0.9s"/>
+        <rect class="win-light" x="425" y="40" width="6" height="5" fill="#FDE047" opacity="0.9" style="animation-duration:1.7s;animation-delay:1.5s"/>
+        <rect class="win-light" x="415" y="52" width="6" height="5" fill="#FCA5A5" opacity="0.9" style="animation-duration:3.1s;animation-delay:0.4s"/>
+        <rect class="win-light" x="700" y="35" width="7" height="6" fill="#FDE047" opacity="0.9" style="animation-duration:2.4s;animation-delay:0.7s"/>
+        <rect class="win-light" x="712" y="35" width="7" height="6" fill="#C4B5FD" opacity="0.9" style="animation-duration:1.6s;animation-delay:1.2s"/>
+        <rect class="win-light" x="700" y="48" width="7" height="6" fill="#93C5FD" opacity="0.9" style="animation-duration:3.3s;animation-delay:0.1s"/>
+        <rect class="win-light" x="712" y="48" width="7" height="6" fill="#FDE047" opacity="0.9" style="animation-duration:2.0s;animation-delay:1.7s"/>
+        <rect class="win-light" x="930" y="48" width="6" height="5" fill="#C4B5FD" opacity="0.9" style="animation-duration:2.6s;animation-delay:0.6s"/>
+        <rect class="win-light" x="942" y="48" width="6" height="5" fill="#FDE047" opacity="0.9" style="animation-duration:3.0s;animation-delay:1.0s"/>
+        <rect class="win-light" x="1105" y="42" width="6" height="5" fill="#93C5FD" opacity="0.9" style="animation-duration:2.2s;animation-delay:0.3s"/>
+        <rect class="win-light" x="1115" y="42" width="6" height="5" fill="#FDE047" opacity="0.9" style="animation-duration:1.8s;animation-delay:1.4s"/>
+        <!-- Ground glow -->
+        <rect x="0" y="195" width="1400" height="5" fill="url(#bldg-grad)" opacity="0.6"/>
+      </svg>
+    </div>
+
+    <!-- Main content -->
+    <div class="intro-content">
+      <div class="intro-badge">🌐 UN SDG City Simulator · 10 Challenges</div>
+
+      <div class="game-title">CivicPulse</div>
+      <div class="game-subtitle">Mayor of Bharatnagar — a city of 4 million lives</div>
+
+      <!-- Animated stats -->
+      <div class="intro-stats">
+        <div class="intro-stat">
+          <div class="intro-stat-val" id="stat-rounds">10</div>
+          <div class="intro-stat-label">Challenges</div>
+        </div>
+        <div class="intro-stat-divider"></div>
+        <div class="intro-stat">
+          <div class="intro-stat-val" id="stat-decisions">40+</div>
+          <div class="intro-stat-label">Decisions</div>
+        </div>
+        <div class="intro-stat-divider"></div>
+        <div class="intro-stat">
+          <div class="intro-stat-val" id="stat-sdgs">9</div>
+          <div class="intro-stat-label">SDGs</div>
+        </div>
+        <div class="intro-stat-divider"></div>
+        <div class="intro-stat">
+          <div class="intro-stat-val">4M</div>
+          <div class="intro-stat-label">Lives</div>
+        </div>
+      </div>
+
+      <!-- Feature pills -->
+      <div class="feature-pills">
+        <span class="feature-pill">🏥 Health</span>
+        <span class="feature-pill">💧 Water</span>
+        <span class="feature-pill">⚡ Energy</span>
+        <span class="feature-pill">🌱 Climate</span>
+        <span class="feature-pill">💼 Jobs</span>
+        <span class="feature-pill">🏫 Education</span>
+        <span class="feature-pill">🛡️ Safety</span>
+        <span class="feature-pill">🌟 Public Trust</span>
+      </div>
+
+      <!-- SDG tags -->
+      <div class="sdg-tags">
+        <span class="sdg-tag">SDG 3 · Good Health</span>
+        <span class="sdg-tag">SDG 6 · Clean Water</span>
+        <span class="sdg-tag">SDG 8 · Decent Work</span>
+        <span class="sdg-tag">SDG 9 · Innovation</span>
+        <span class="sdg-tag">SDG 11 · Sustainable Cities</span>
+        <span class="sdg-tag">SDG 12 · Responsible Consumption</span>
+        <span class="sdg-tag">SDG 13 · Climate Action</span>
+        <span class="sdg-tag">SDG 16 · Strong Institutions</span>
+        <span class="sdg-tag">SDG 17 · Partnerships</span>
+      </div>
+
+      <!-- Difficulty selector -->
+      <div class="difficulty-wrap">
+        <div class="difficulty-label">⚔️ Select Difficulty</div>
+        <div class="diff-btns">
+          <button class="diff-btn easy active" onclick="setDifficulty('easy')">Easy</button>
+          <button class="diff-btn medium" onclick="setDifficulty('medium')">Medium</button>
+          <button class="diff-btn hard" onclick="setDifficulty('hard')">Hard</button>
+        </div>
+      </div>
+
+      <!-- Mayor name input + CTA -->
+      <div class="cta-group">
+        <div class="mayor-input-wrap">
+          <label class="mayor-input-label">🏛️ Your Name, Mayor</label>
+          <input
+            id="mayor-name-input"
+            class="mayor-name-input"
+            type="text"
+            maxlength="24"
+            placeholder="Enter your name…"
+            autocomplete="off"
+            onkeydown="if(event.key==='Enter') startGame()"
+          />
+          <div class="mayor-input-hint" id="mayor-input-error"></div>
+        </div>
+        <button class="btn-primary" onclick="startGame()">
+          🏛️ &nbsp;Take the Mayor's Chair
+        </button>
+        <div class="btn-hint">No account needed · Free to play · ~15 min</div>
+      </div>
+
+      <!-- How to play -->
+      <div class="how-strip">
+        <div class="how-item">
+          <div class="how-icon">📋</div>
+          <div class="how-label">Read the crisis</div>
+        </div>
+        <div class="how-item">
+          <div class="how-icon">🃏</div>
+          <div class="how-label">Pick a decision</div>
+        </div>
+        <div class="how-item">
+          <div class="how-icon">📈</div>
+          <div class="how-label">See impact</div>
+        </div>
+        <div class="how-item">
+          <div class="how-icon">🏆</div>
+          <div class="how-label">Build legacy</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sdg-footer">Real data · Real decisions · Real impact · UN SDGs aligned</div>
+  </div>
+
+  <!-- ============ GAME SCREEN ============ -->
+  <div id="screen-game" class="screen">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:0.8rem;">
+        <div>
+          <div class="topbar-title">CivicPulse</div>
+          <div class="topbar-meta" id="topbar-meta">Challenge 1 of 10 · Bharatnagar</div>
+        </div>
+      </div>
+      <div class="metrics-bar" id="metrics-bar">
+        <!-- injected by JS -->
+      </div>
+    </div>
+
+    <!-- Decision timer bar -->
+    <div class="timer-wrap" id="timer-wrap">
+      <span class="timer-label">⏱ DECIDE</span>
+      <div class="timer-track"><div class="timer-fill" id="timer-fill"></div></div>
+      <span class="timer-count" id="timer-count">30</span>
+    </div>
+
+    <!-- News ticker -->
+    <div class="news-ticker-wrap" id="news-ticker-wrap">
+      <div class="news-ticker-label">📡 City News</div>
+      <div class="news-ticker-track">
+        <div class="news-ticker-inner" id="news-ticker-inner">
+          <!-- injected by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Challenge progress strip -->
+    <div class="progress-strip" id="progress-strip">
+      <!-- injected by JS -->
+    </div>
+
+    <div class="game-layout">
+
+      <!-- MAIN PANEL -->
+      <div class="main-panel">
+
+        <!-- Challenge header -->
+        <div class="round-header">
+          <div class="round-badge" id="round-badge">CHALLENGE 1</div>
+          <div class="round-info">
+            <div class="round-title" id="round-title">Loading...</div>
+            <div class="round-desc" id="round-desc"></div>
+            <div class="round-sdg" id="round-sdg"></div>
+          </div>
+        </div>
+
+        <!-- AI Advisor -->
+        <div class="advisor-banner" id="advisor-banner">
+          <div class="advisor-avatar">🤖</div>
+          <div class="advisor-content">
+            <div class="advisor-name">🏛️ Civic Advisor</div>
+            <div class="advisor-text" id="advisor-text">Analysing city conditions…</div>
+          </div>
+        </div>
+
+        <!-- Decision cards -->
+        <div class="decisions-grid" id="decisions-grid">
+          <!-- injected -->
+        </div>
+
+        <!-- Outcome: two popup cards -->
+        <div class="outcome-box" id="outcome-box">
+          <!-- Popup 1: What Happened -->
+          <div class="popup-card popup-story" id="popup-story">
+            <div class="popup-label">📋 What happens</div>
+            <div class="outcome-text" id="outcome-text"></div>
+            <div class="outcome-deltas" id="outcome-deltas"></div>
+          </div>
+          <!-- Popup 2: Best Decision (injected by JS) -->
+          <div id="popup-best-wrap"></div>
+          <!-- SDG Educational Insight -->
+          <div class="sdg-insight" id="sdg-insight">
+            <div class="sdg-insight-label">🌐 Global Insight</div>
+            <div class="sdg-insight-text" id="sdg-insight-text"></div>
+          </div>
+          <button class="btn-next" id="btn-next" onclick="nextRound()">
+            Next Challenge →
+          </button>
+        </div>
+
+      </div>
+
+      <!-- SIDEBAR -->
+      <div class="sidebar">
+
+        <div>
+          <div class="sidebar-section-title">📡 City Stats Radar</div>
+          <div class="radar-wrap">
+            <canvas id="radar-canvas" width="260" height="260"></canvas>
+          </div>
+        </div>
+
+
+
+        <div>
+          <div class="sidebar-section-title">🏙️ Bharatnagar City Dashboard</div>
+          <div class="city-dashboard" id="city-dashboard">
+            <!-- injected by JS -->
+          </div>
+        </div>
+
+        <div>
+          <div class="sidebar-section-title">🌟 Public Trust</div>
+          <div class="volunteer-track">
+            <div class="volunteer-level" id="vol-level">0</div>
+            <div class="volunteer-bar">
+              <div class="volunteer-fill" id="vol-fill" style="width:0%"></div>
+            </div>
+            <div class="volunteer-desc" id="vol-desc">No volunteers yet. Decisions that engage citizens build your
+              network.</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="sidebar-section-title">📊 Real India Data</div>
+          <div class="data-box" id="data-box">
+            <!-- injected per round -->
+          </div>
+        </div>
+
+        <div style="flex:1;">
+          <div class="sidebar-section-title">📜 Decision Log</div>
+          <div class="history-log" id="history-log"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ END SCREEN ============ -->
+  <div id="screen-end" class="screen">
+    <div class="end-inner">
+      <!-- LEFT: results -->
+      <div class="end-results">
+        <!-- Cinematic city visualization -->
+<div class="end-grade" id="end-grade">B</div>
+        <div class="end-title" id="end-title">Decent Mayor</div>
+        <div class="end-stats" id="end-stats"></div>
+        <div class="end-verdict" id="end-verdict"></div>
+        <div class="sdg-reflection" id="sdg-reflection"></div>
+        <div id="end-achievements"><!-- injected --></div>
+
+        <!-- Name entry + submit -->
+        <div class="lb-submit-area" id="lb-submit-area">
+          <div class="lb-submit-label">🏆 Enter your name for the leaderboard</div>
+          <div class="lb-submit-row">
+            <input class="lb-name-input" id="lb-name-input" type="text" maxlength="20" placeholder="Mayor's name…" />
+            <button class="lb-submit-btn" id="lb-submit-btn" onclick="submitScore()">Submit Score</button>
+          </div>
+          <div class="lb-submit-status" id="lb-submit-status"></div>
+        </div>
+
+        <button class="btn-restart" onclick="restartGame()">🔄 &nbsp;Play Again</button>
+      </div>
+
+      <!-- RIGHT: leaderboard -->
+      <div class="end-leaderboard">
+        <div class="lb-header">
+          <span class="lb-title">🌍 Global Leaderboard</span>
+          <button class="lb-refresh-btn" onclick="loadLeaderboard()">↻ Refresh</button>
+        </div>
+        <div class="lb-list" id="lb-list">
+          <div class="lb-loading">Loading scores…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
