@@ -1,4 +1,4 @@
-# CivicPulse 🏙️
+# CivicPulse 
 
 A browser-based city governance simulation game built for a 36-hour hackathon.
 
@@ -28,4 +28,4 @@ Or play it live: [GitHub Pages link here]
 
 ## Built By
 
-[Manu](https://manu.space) — CS student, game dev, space enthusiast.
+[Manu] — CS student.
