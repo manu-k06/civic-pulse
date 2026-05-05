@@ -18,12 +18,11 @@ Take on the role of a city administrator and make policy decisions that affect y
 
 Just open `index.html` in your browser — no build tools, no dependencies, runs entirely in the browser.
 
-Or play it live: [GitHub Pages link here]
+Or play it live: 
 
 ## Tech Stack
 
 - Vanilla HTML, CSS, JavaScript
-- Phaser 3 (game framework)
 - No backend required
 
 ## Built By
