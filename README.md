@@ -18,7 +18,7 @@ Take on the role of a city administrator and make policy decisions that affect y
 
 Just open `index.html` in your browser — no build tools, no dependencies, runs entirely in the browser.
 
-Or play it live: 
+Or play it live: https://manu-k06.github.io/civic-pulse
 
 ## Tech Stack
 
